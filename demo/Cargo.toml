@@ -1,0 +1,27 @@
+[package]
+name = "demo"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+actix-web = { workspace = true }
+serde = { workspace = true }
+sqlx = { workspace = true }
+serde_json = { workspace = true }
+jsonwebtoken = { workspace = true }
+bcrypt = { workspace = true }
+chrono = { workspace = true }
+very_simple_rest = { path = "../.." }
+log = { workspace = true }
+env_logger = { workspace = true }
+actix-cors = { workspace = true }
+actix-files = { workspace = true }
+
+# Explicitly defining the binary target to avoid confusion
+[[bin]]
+name = "demo"
+path = "src/main.rs"
+
+

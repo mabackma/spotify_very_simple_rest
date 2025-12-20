@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST Macro Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .auth-panel {
+            background-color: #e9f5ff;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .output {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>REST Macro Demo - API Client</h1>
+    
+    <div class="panel auth-panel">
+        <h2>Authentication</h2>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="password">
+        </div>
+        <button id="registerBtn">Register</button>
+        <button id="loginBtn">Login</button>
+        <div id="authOutput" class="output"></div>
+        <div id="tokenDisplay"></div>
+    </div>
+
+    <h1>CRUD for Posts and Comments</h1>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Posts</h2>
+            <div class="form-group">
+                <label for="postTitle">Title:</label>
+                <input type="text" id="postTitle" placeholder="Post title">
+            </div>
+            <div class="form-group">
+                <label for="postContent">Content:</label>
+                <textarea id="postContent" rows="4" placeholder="Post content"></textarea>
+            </div>
+            <button id="createPostBtn">Create Post</button>
+            <button id="getPostsBtn">Get All Posts</button>
+            <div id="postsOutput" class="output"></div>
+
+            <h2>Update Post</h2>
+            <div class="form-group">
+                <label for="postToUpdateId">Post ID:</label>
+                <input type="text" id="postToUpdateId">
+            </div>
+
+            <div class="form-group">
+                <label for="postUpdateTitle">Title:</label>
+                <input type="text" id="postUpdateTitle">
+            </div>
+
+            <div class="form-group">
+                <label for="postUpdateContent">Content:</label>
+                <textarea id="postUpdateContent" rows="4"></textarea>
+            </div>
+
+            <button id="loadPostForUpdateBtn">Load Post</button>
+            <button id="updatePostBtn">Update Post</button>
+            <div id="postUpdatedOutput" class="output"></div>
+
+            <h2>Patch Post (Only content can be edited)</h2>
+            <button id="patchPostBtn">Patch Post</button>
+
+            <h2>Delete Post</h2>
+            <div class="form-group">
+                <label for="postIdToDelete">ID:</label>
+                <input type="text" id="postIdToDelete" placeholder="Post ID">
+            </div>
+            <button id="deletePostBtn">Delete Post</button>
+        </div>
+        
+        <div class="panel">
+            <h2>Comments</h2>
+            <div class="form-group">
+                <label for="postId">Post ID:</label>
+                <input type="number" id="postId" placeholder="Post ID">
+            </div>
+            <div class="form-group">
+                <label for="commentTitle">Title:</label>
+                <input type="text" id="commentTitle" placeholder="Comment title">
+            </div>
+            <div class="form-group">
+                <label for="commentContent">Content:</label>
+                <textarea id="commentContent" rows="4" placeholder="Comment content"></textarea>
+            </div>
+            <button id="createCommentBtn">Create Comment</button>
+            <button id="getCommentsBtn">Get All Comments</button>
+            <button id="getPostCommentsBtn">Get Comments for Post</button>
+            <div id="commentsOutput" class="output"></div>
+
+            <h2>Update Comment</h2>
+            <div class="form-group">
+                <label for="postIdToUpdateComment">Post ID:</label>
+                <input type="text" id="postIdToUpdateComment">
+            </div>
+
+            <div class="form-group">
+                <label for="commentToUpdateId">Comment ID:</label>
+                <input type="text" id="commentToUpdateId">
+            </div>
+
+            <div class="form-group">
+                <label for="commentUpdateTitle">Title:</label>
+                <input type="text" id="commentUpdateTitle">
+            </div>
+
+            <div class="form-group">
+                <label for="commentUpdateContent">Content:</label>
+                <textarea id="commentUpdateContent" rows="4"></textarea>
+            </div>
+
+            <button id="loadCommentForUpdateBtn">Load Comment</button>
+            <button id="updateCommentBtn">Update Comment</button>
+            <div id="commentUpdatedOutput" class="output"></div>
+
+            <h2>Patch Comment (Only content can be edited)</h2>
+            <button id="patchCommentBtn">Patch Comment</button>
+
+            <div class="panel">
+            <h2>Delete Comment</h2>
+            <div class="form-group">
+                <label for="commentToDeleteId">ID:</label>
+                <input type="text" id="commentToDeleteId" placeholder="Comment ID">
+            </div>
+            <button id="deleteCommentBtn">Delete Comment</button>
+        </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

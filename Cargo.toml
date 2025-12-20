@@ -1,0 +1,21 @@
+[package]
+name = "spotify_very_simple_rest"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4"
+serde = { version = "1", features = ["derive"] }
+sqlx = { version = "0.8.3", features = ["runtime-tokio-native-tls", "sqlite", "any", "macros", "chrono"] }
+serde_json = "1.0"
+jsonwebtoken = "9"
+bcrypt = "0.17"
+chrono = "0.4"
+very_simple_rest = { path = "../very_simple_rest" }
+log = "0.4"
+env_logger = "0.11"
+actix-cors = "0.7"
+actix-files = "0.6"
+
+tokio = { version = "1", features = ["full"] }
+csv = "1.3"
