@@ -4,14 +4,16 @@ use serde::{Serialize, Deserialize, Deserializer};
 use sqlx::{SqlitePool, FromRow};
 use csv::Reader;
 
-fn bool_from_csv<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+fn bool_from_csv<'de, D>(deserializer: D) -> Result<Option<i32>, D::Error>
 where
     D: Deserializer<'de>,
 {
     let s: Option<String> = Option::deserialize(deserializer)?;
     match s.as_deref() {
-        Some("TRUE") | Some("true") => Ok(Some(true)),
-        Some("FALSE") | Some("false") => Ok(Some(false)),
+        //Some("TRUE") | Some("true") => Ok(Some(true)),
+        //Some("FALSE") | Some("false") => Ok(Some(false)),
+        Some("TRUE") | Some("true") => Ok(Some(1)),
+        Some("FALSE") | Some("false") => Ok(Some(0)),
         Some(_) => Err(serde::de::Error::custom("invalid boolean")),
         None => Ok(None),
     }
@@ -26,7 +28,8 @@ pub struct Track {
     track_number: Option<i32>,
     track_popularity: Option<i32>,
     #[serde(deserialize_with = "bool_from_csv")]
-    explicit: Option<bool>,
+    //explicit: Option<bool>,
+    explicit: Option<i32>,
     artist_name: Option<String>,
     artist_popularity: Option<i32>,
     artist_followers: Option<i32>,
@@ -36,7 +39,7 @@ pub struct Track {
     album_release_date: Option<String>,
     album_total_tracks: Option<i32>,
     album_type: Option<String>,
-    track_duration_min: Option<f32>,
+    track_duration_min: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow, RestApi)]
@@ -102,7 +105,8 @@ pub async fn initialize_spotify_db(pool: &SqlitePool, csv_path: &str) -> Result<
         .bind(&track.track_name)
         .bind(&track.track_number)
         .bind(&track.track_popularity)
-        .bind(&track.explicit.map(|b| b as i64))
+        //.bind(&track.explicit.map(|b| b as i64))
+        .bind(&track.explicit)
         .bind(&track.artist_name)
         .bind(&track.artist_popularity)
         .bind(&track.artist_followers)
