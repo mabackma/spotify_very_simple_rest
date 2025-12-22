@@ -3,6 +3,23 @@ use very_simple_rest::prelude::*;
 use spotify_very_simple_rest::initialize::{User, Track, initialize_spotify_db};
 use sqlx::SqlitePool;
 
+
+async fn initialize_database() -> Result<(), Box<dyn std::error::Error>> {
+    let pool = SqlitePool::connect("sqlite://./spotify.db?mode=rwc").await?;
+
+    let table_exists: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='track'")
+        .fetch_one(&pool)
+        .await?;
+
+    if table_exists.0 == 0 {
+        initialize_spotify_db(&pool, "./spotify_data.csv").await?;
+    } else {
+        println!("Database already initialized.");
+    }
+
+    Ok(())
+}
+
 fn log_available_endpoints() {
     let id = "1";
     info!("===== Available API Endpoints =====");
@@ -100,20 +117,4 @@ async fn main() -> std::io::Result<()> {
 
     info!("Server starting at http://127.0.0.1:8080");
     server.run().await
-}
-
-async fn initialize_database() -> Result<(), Box<dyn std::error::Error>> {
-    let pool = SqlitePool::connect("sqlite://./spotify.db?mode=rwc").await?;
-
-    let table_exists: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='track'")
-        .fetch_one(&pool)
-        .await?;
-
-    if table_exists.0 == 0 {
-        initialize_spotify_db(&pool, "./spotify_data.csv").await?;
-    } else {
-        println!("Database already initialized.");
-    }
-
-    Ok(())
 }
