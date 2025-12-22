@@ -1,6 +1,7 @@
-use serde::Deserialize;
-use serde::Deserializer;
-use sqlx::SqlitePool;
+use very_simple_rest::prelude::*;
+
+use serde::{Serialize, Deserialize, Deserializer};
+use sqlx::{SqlitePool, FromRow};
 use csv::Reader;
 
 fn bool_from_csv<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
@@ -16,24 +17,36 @@ where
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, RestApi)]
+#[rest_api(table = "post", id = "id", db = "sqlite")]
+#[require_role(read = "user", update = "user", patch = "user", delete = "user")]
 pub struct Track {
     track_id: String,
     track_name: Option<String>,
-    track_number: Option<u32>,
-    track_popularity: Option<u32>,
+    track_number: Option<i32>,
+    track_popularity: Option<i32>,
     #[serde(deserialize_with = "bool_from_csv")]
     explicit: Option<bool>,
     artist_name: Option<String>,
-    artist_popularity: Option<u32>,
-    artist_followers: Option<u32>,
+    artist_popularity: Option<i32>,
+    artist_followers: Option<i32>,
     artist_genres: Option<String>,
     album_id: Option<String>,
     album_name: Option<String>,
     album_release_date: Option<String>,
-    album_total_tracks: Option<u32>,
+    album_total_tracks: Option<i32>,
     album_type: Option<String>,
     track_duration_min: Option<f32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, RestApi)]
+#[rest_api(table = "user", id = "id", db = "sqlite")]
+#[require_role(read = "admin", update = "admin", delete = "admin")]
+pub struct User {
+    pub id: Option<i64>,
+    pub email: String,
+    pub password_hash: String,
+    pub role: String,
 }
 
 pub async fn initialize_spotify_db(pool: &SqlitePool, csv_path: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -89,7 +102,7 @@ pub async fn initialize_spotify_db(pool: &SqlitePool, csv_path: &str) -> Result<
         .bind(&track.track_name)
         .bind(&track.track_number)
         .bind(&track.track_popularity)
-        .bind(&track.explicit)
+        .bind(&track.explicit.map(|b| b as i64))
         .bind(&track.artist_name)
         .bind(&track.artist_popularity)
         .bind(&track.artist_followers)
