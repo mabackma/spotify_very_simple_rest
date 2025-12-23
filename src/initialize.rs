@@ -23,6 +23,7 @@ where
 #[rest_api(table = "post", id = "id", db = "sqlite")]
 #[require_role(read = "user", update = "user", patch = "user", delete = "user")]
 pub struct Track {
+    id: Option<i64>,
     track_id: String,
     track_name: Option<String>,
     track_number: Option<i32>,
@@ -56,7 +57,8 @@ pub async fn initialize_spotify_db(pool: &SqlitePool, csv_path: &str) -> Result<
     // Create table
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS track (
-            track_id TEXT PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            track_id TEXT,
             track_name TEXT,
             track_number INTEGER,
             track_popularity INTEGER,

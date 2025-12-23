@@ -10,7 +10,7 @@ const tracksOutput = document.getElementById('tracksOutput');
 const trackUpdatedOutput = document.getElementById('trackUpdatedOutput');
 const tokenDisplay = document.getElementById('tokenDisplay');
 
-const trackUpdateTitle = document.getElementById('trackUpdateTitle');
+const trackUpdateArtistName = document.getElementById('trackUpdateArtistName');
 const trackUpdateTrackName = document.getElementById('trackUpdateTrackName');
 
 // Show token if it exists
@@ -147,16 +147,16 @@ async function createTrack() {
         return;
     }
 
-    const title = document.getElementById('trackTitle').value;
+    const artistName = document.getElementById('trackArtistName').value;
     const trackName = document.getElementById('trackTrackName').value;
     
-    if (!title || !trackName) {
-        displayError(tracksOutput, 'Title and track name are required');
+    if (!artistName || !trackName) {
+        displayError(tracksOutput, 'Artist name and track name are required');
         return;
     }
     
     try {
-        const data = { title, trackName };
+        const data = { artistName, trackName };
         const response = await fetchJson(`${API_URL}/track`, {
             method: 'POST',
             headers: {
@@ -167,7 +167,7 @@ async function createTrack() {
         });
 
         displaySuccess(tracksOutput, 'Track created successfully!');
-        document.getElementById('trackTitle').value = '';
+        document.getElementById('trackArtistName').value = '';
         document.getElementById('trackTrackName').value = '';
         
         // Refresh tracks list
@@ -227,6 +227,7 @@ async function getTracks() {
 }
 
 async function loadTrack() {
+    console.log('in loadTrack function');
     const id = document.getElementById('trackToUpdateId').value;
     if (!id) return;
 
@@ -234,8 +235,8 @@ async function loadTrack() {
         headers: { 'Authorization': `Bearer ${authToken}` }
     });
 
-    document.getElementById('trackUpdateTitle').value = track.title;
-    document.getElementById('trackUpdateTrackName').value = track.trackName;
+    document.getElementById('trackUpdateArtistName').value = track.artist_name;
+    document.getElementById('trackUpdateTrackName').value = track.track_name;
 }
 
 async function updateTrack() {
@@ -245,16 +246,16 @@ async function updateTrack() {
     }
 
     const id = Number(document.getElementById('trackToUpdateId').value);
-    const title = document.getElementById('trackUpdateTitle').value;
+    const artistName = document.getElementById('trackUpdateArtistName').value;
     const trackName = document.getElementById('trackUpdateTrackName').value;
     
-    if (!title || !trackName) {
-        displayError(trackUpdatedOutput, 'Title and track name are required');
+    if (!artistName || !trackName) {
+        displayError(trackUpdatedOutput, 'Artist name and track name are required');
         return;
     }
     
     try {
-        const data = { title, trackName };
+        const data = { artistName, trackName };
         const response = await fetchJson(`${API_URL}/track/${id}`, {
             method: 'PUT',
             headers: {
@@ -280,10 +281,10 @@ async function patchTrack() {
     }
 
     const id = Number(document.getElementById('trackToUpdateId').value);
-    const trackName = document.getElementById('trackUpdateTrackName').value;
+    const track_name = document.getElementById('trackUpdateTrackName').value;
     
     try {
-        const data = { trackName };
+        const data = { track_name };
         const response = await fetchJson(`${API_URL}/track/${id}`, {
             method: 'PATCH',
             headers: {
